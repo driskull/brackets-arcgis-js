@@ -1,0 +1,26 @@
+{
+    "name": "ArcGIS-JSAPI",
+    "title": "ArcGIS JSAPI",
+    "version": "0.0.1",
+    "description": "Code hints for the ArcGIS JavaScript API",
+    "homepage": "",
+    "author": "Matt Driscoll matthew.driscoll@gmail.com (https://github.com/driskull/)",
+    "license": "MIT",
+    "categories":"code hints",
+    "keywords": [
+        "JavaScript",
+        "Esri",
+        "JSAPI",
+        "Code Hints",
+        "map",
+        "Mapping",
+        "IDE"
+    ],
+    "files": [
+        "main.js",
+        "settings.json"
+    ],
+    "engines": {
+        "brackets": ">=0.22.0"
+    }
+}
