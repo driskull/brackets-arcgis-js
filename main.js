@@ -7,7 +7,7 @@ define(function (require, exports, module) {
     // Load dependent modules
     var AppInit             = brackets.getModule("utils/AppInit"),
         CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
-        ArcGIS_JS_JSON      = require("text!ArcGIS-JS.json"),
+        ArcGIS_JS_JSON      = require("text!jsapi.json"),
         ArcGIS_JS;
 
     /**
