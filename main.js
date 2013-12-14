@@ -31,73 +31,6 @@ define(function (require, exports, module) {
             }
         });
     };
-
-    /**
-     * Helper function that determines the possible value hints for a given html tag/attribute name pair
-     * 
-     * @param {{queryStr: string}} query
-     * The current query
-     *
-     * @param {string} tagName 
-     * HTML tag name
-     *
-     * @param {string} attrName 
-     * HTML attribute name
-     *
-     * @return {{hints: Array.<string>|$.Deferred, sortFunc: ?Function}} 
-     * The (possibly deferred) hints and the sort function to use on thise hints.
-     */
-    ArcGISHints.prototype._getValueHintsForAttr = function (query, tagName, attrName) {
-        // We look up attribute values with tagName plus a slash and attrName first.  
-        // If the lookup fails, then we fall back to look up with attrName only. Most 
-        // of the attributes in JSON are using attribute name only as their properties, 
-        // but in some cases like "type" attribute, we have different properties like 
-        // "script/type", "link/type" and "button/type".
-        var hints = [],
-            sortFunc = null;
-        
-        var tagPlusAttr = tagName + "/" + attrName,
-            attrInfo = ArcGIS_JS[tagPlusAttr] || ArcGIS_JS[attrName];
-        
-        if (attrInfo) {
-            if (attrInfo.type === "boolean") {
-                hints = ["false", "true"];
-            } else if (attrInfo.attribOption) {
-                hints = attrInfo.attribOption;
-            }
-        }
-        
-        return { hints: hints, sortFunc: sortFunc };
-    };
-    
-    /**
-     * Check whether the exclusion is still the same as text after the cursor. 
-     * If not, reset it to null.
-     *
-     * @param {boolean} attrNameOnly
-     * true to indicate that we update the exclusion only if the cursor is inside an attribute name context.
-     * Otherwise, we also update exclusion for attribute value context.
-     */
-    ArcGISHints.prototype.updateExclusion = function (attrNameOnly) {
-        /*
-        if (this.exclusion && this.tagInfo) {
-            var tokenType = this.tagInfo.position.tokenType,
-                offset = this.tagInfo.position.offset,
-                textAfterCursor;
-            
-            if (tokenType === HTMLUtils.ATTR_NAME) {
-                textAfterCursor = this.tagInfo.attr.name.substr(offset);
-            } else if (!attrNameOnly && tokenType === HTMLUtils.ATTR_VALUE) {
-                textAfterCursor = this.tagInfo.attr.value.substr(offset);
-            }
-            if (!CodeHintManager.hasValidExclusion(this.exclusion, textAfterCursor)) {
-                this.exclusion = null;
-            }
-        }
-        */
-        
-        this.exclusion = null; // added
-    };
     
     /**
      * Determines whether HTML attribute hints are available in the current 
@@ -117,6 +50,11 @@ define(function (require, exports, module) {
      * whether it is appropriate to do so.
      */
     ArcGISHints.prototype.hasHints = function (editor, implicitChar) {
+        
+        console.log(editor);
+        console.log(implicitChar);
+        
+        
         /*
         var pos = editor.getCursorPos(),
             tokenType,
@@ -125,6 +63,9 @@ define(function (require, exports, module) {
             textAfterCursor;
         
         this.editor = editor;
+        
+        
+        
         this.tagInfo = HTMLUtils.getTagInfo(editor, pos);
         tokenType = this.tagInfo.position.tokenType;
         offset = this.tagInfo.position.offset;
@@ -383,7 +324,7 @@ define(function (require, exports, module) {
             this.editor.setCursorPos(start.line, start.ch + completion.length + 1);
         }
         */
-        return false;
+        return true; // added
     };
 
     AppInit.appReady(function () {
