@@ -5,20 +5,20 @@ define(function (require, exports, module) {
     "use strict";
 
     // Load dependent modules
-    var AppInit             = brackets.getModule("utils/AppInit"),
-        CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
-        ArcGIS_JS_JSON      = require("text!jsapi.json"),
+    var AppInit = brackets.getModule("utils/AppInit"),
+        CodeHintManager = brackets.getModule("editor/CodeHintManager"),
+        ArcGIS_JS_JSON = require("text!jsapi.json"),
         ArcGIS_JS;
     
-    /**
-     * @constructor
-     */
+
     function ArcGISHints() {
-        //this.globalAttributes = this.readGlobalArcGISHints();
+        this.globalAttributes = this.readGlobalArcGISHints();
         //this.cachedHints = null;
         //this.exclusion = "";
     }
 
+    
+    
     /**
      * @private
      * Parse the code hints from JSON data and extract all hints from property names.
@@ -31,6 +31,8 @@ define(function (require, exports, module) {
             }
         });
     };
+    
+    
     
     /**
      * Determines whether HTML attribute hints are available in the current 
@@ -51,81 +53,18 @@ define(function (require, exports, module) {
      */
     ArcGISHints.prototype.hasHints = function (editor, implicitChar) {
         
-        /*
-        var pos = editor.getCursorPos(),
-            tokenType,
-            offset,
-            query,
-            textAfterCursor;
+        var mode = editor.getModeForSelection(),
+            cursor = editor.getCursorPos();
         
-        this.editor = editor;
+        console.log(editor);
+        
+        console.log(implicitChar);
+        
+        console.log(cursor);
+        
+        return true;
         
         
-        
-        this.tagInfo = HTMLUtils.getTagInfo(editor, pos);
-        tokenType = this.tagInfo.position.tokenType;
-        offset = this.tagInfo.position.offset;
-        if (implicitChar === null) {
-            query = null;
-             
-            if (tokenType === HTMLUtils.ATTR_NAME) {
-                if (offset >= 0) {
-                    query = this.tagInfo.attr.name.slice(0, offset);
-                }
-            } else if (tokenType === HTMLUtils.ATTR_VALUE) {
-                if (this.tagInfo.position.offset >= 0) {
-                    query = this.tagInfo.attr.value.slice(0, offset);
-                } else {
-                    // We get negative offset for a quoted attribute value with some leading whitespaces 
-                    // as in <a rel= "rtl" where the cursor is just to the right of the "=".
-                    // So just set the queryStr to an empty string. 
-                    query = "";
-                }
-                
-                // If we're at an attribute value, check if it's an attribute name that has hintable values.
-                if (this.tagInfo.attr.name) {
-                    var hintsAndSortFunc = this._getValueHintsForAttr({queryStr: query},
-                                                                      this.tagInfo.tagName,
-                                                                      this.tagInfo.attr.name);
-                    var hints = hintsAndSortFunc.hints;
-                    if (hints instanceof Array) {
-                        // If we got synchronous hints, check if we have something we'll actually use
-                        var i, foundPrefix = false;
-                        for (i = 0; i < hints.length; i++) {
-                            if (hints[i].indexOf(query) === 0) {
-                                foundPrefix = true;
-                                break;
-                            }
-                        }
-                        if (!foundPrefix) {
-                            query = null;
-                        }
-                    }
-                }
-            }
-
-            if (offset >= 0) {
-                if (tokenType === HTMLUtils.ATTR_NAME && offset === 0) {
-                    this.exclusion = this.tagInfo.attr.name;
-                } else {
-                    this.updateExclusion(false);
-                }
-            }
-            
-            return query !== null;
-        } else {
-            if (implicitChar === " " || implicitChar === "'" ||
-                    implicitChar === "\"" || implicitChar === "=") {
-                if (tokenType === HTMLUtils.ATTR_NAME) {
-                    this.exclusion = this.tagInfo.attr.name;
-                }
-                return true;
-            }
-            return false;
-        }
-        */
-        
-        return true; // added
         
         
     };
@@ -150,85 +89,17 @@ define(function (require, exports, module) {
      *    to allow result string to stretch width of display.
      */
     ArcGISHints.prototype.getHints = function (implicitChar) {
-        /*
-        var cursor = this.editor.getCursorPos(),
-            query = {queryStr: null},
-            tokenType,
-            offset,
-            result = [],
-            textAfterCursor;
- 
-        this.tagInfo = HTMLUtils.getTagInfo(this.editor, cursor);
-        tokenType = this.tagInfo.position.tokenType;
-        offset = this.tagInfo.position.offset;
-        if (tokenType === HTMLUtils.ATTR_NAME || tokenType === HTMLUtils.ATTR_VALUE) {
-            query.tag = this.tagInfo.tagName;
-            
-            if (offset >= 0) {
-                if (tokenType === HTMLUtils.ATTR_NAME) {
-                    query.queryStr = this.tagInfo.attr.name.slice(0, offset);
-                } else {
-                    query.queryStr = this.tagInfo.attr.value.slice(0, offset);
-                    query.attrName = this.tagInfo.attr.name;
-                }
-                this.updateExclusion(false);
-            } else if (tokenType === HTMLUtils.ATTR_VALUE) {
-                // We get negative offset for a quoted attribute value with some leading whitespaces 
-                // as in <a rel= "rtl" where the cursor is just to the right of the "=".
-                // So just set the queryStr to an empty string. 
-                query.queryStr = "";
-                query.attrName = this.tagInfo.attr.name;
-            }
-
-            query.usedAttr = HTMLUtils.getTagAttributes(this.editor, cursor);
-        }
-
-        if (query.tag && query.queryStr !== null) {
-            var tagName = query.tag,
-                attrName = query.attrName,
-                filter = query.queryStr,
-                unfiltered = [],
-                hints = [],
-                sortFunc = null;
-
-            if (attrName) {
-                var hintsAndSortFunc = this._getValueHintsForAttr(query, tagName, attrName);
-                hints = hintsAndSortFunc.hints;
-                sortFunc = hintsAndSortFunc.sortFunc;
-                
-            } 
-            
-            if (hints instanceof Array && hints.length) {
-                console.assert(!result.length);
-                result = $.map(hints, function (item) {
-                    if (item.indexOf(filter) === 0) {
-                        return item;
-                    }
-                }).sort(sortFunc);
-                return {
-                    hints: result,
-                    match: query.queryStr,
-                    selectInitial: true,
-                    handleWideResults: false
-                };
-            } else if (hints instanceof Object && hints.hasOwnProperty("done")) { // Deferred hints
-                var deferred = $.Deferred();
-                hints.done(function (asyncHints) {
-                    deferred.resolveWith(this, [{
-                        hints: asyncHints,
-                        match: query.queryStr,
-                        selectInitial: true,
-                        handleWideResults: false
-                    }]);
-                });
-                return deferred;
-            } else {
-                return null;
-            }
-        }
-        */
         
-        return null; // added
+        return {
+            hints: ["test1","test2"],
+            match: "tst",
+            selectInitial: true,
+            handleWideResults: false
+        };
+        
+        
+        
+        return null;
         
     };
     
@@ -243,93 +114,21 @@ define(function (require, exports, module) {
      * additional explicit hint request.
      */
     ArcGISHints.prototype.insertHint = function (completion) {
-        /*
-        var cursor = this.editor.getCursorPos(),
-            start = {line: -1, ch: -1},
-            end = {line: -1, ch: -1},
-            tokenType = this.tagInfo.position.tokenType,
-            offset = this.tagInfo.position.offset,
-            charCount = 0,
-            insertedName = false,
-            replaceExistingOne = this.tagInfo.attr.valueAssigned,
-            endQuote = "",
-            shouldReplace = true,
-            textAfterCursor;
-
-        if (tokenType === HTMLUtils.ATTR_NAME) {
-            textAfterCursor = this.tagInfo.attr.name.substr(offset);
-            if (CodeHintManager.hasValidExclusion(this.exclusion, textAfterCursor)) {
-                charCount = offset;
-                replaceExistingOne = false;
-            } else {
-                charCount = this.tagInfo.attr.name.length;
-            }
-            // Append an equal sign and two double quotes if the current attr is not an empty attr
-            // and then adjust cursor location before the last quote that we just inserted.
-            if (!replaceExistingOne && attributes && attributes[completion] &&
-                    attributes[completion].type !== "flag") {
-                completion += "=\"\"";
-                insertedName = true;
-            } else if (completion === this.tagInfo.attr.name) {
-                shouldReplace = false;
-            }
-        } else if (tokenType === HTMLUtils.ATTR_VALUE) {
-            textAfterCursor = this.tagInfo.attr.value.substr(offset);
-            if (CodeHintManager.hasValidExclusion(this.exclusion, textAfterCursor)) {
-                charCount = offset;
-                // Set exclusion to null only after attribute value insertion,
-                // not after attribute name insertion since we need to keep it 
-                // for attribute value insertion.
-                this.exclusion = null;
-            } else {
-                charCount = this.tagInfo.attr.value.length;
-            }
-            
-            if (!this.tagInfo.attr.hasEndQuote) {
-                endQuote = this.tagInfo.attr.quoteChar;
-                if (endQuote) {
-                    completion += endQuote;
-                } else if (offset === 0) {
-                    completion = "\"" + completion + "\"";
-                }
-            } else if (completion === this.tagInfo.attr.value) {
-                shouldReplace = false;
-            }
-        }
-
-        end.line = start.line = cursor.line;
-        start.ch = cursor.ch - offset;
-        end.ch = start.ch + charCount;
-
-        if (shouldReplace) {
-            if (start.ch !== end.ch) {
-                this.editor.document.replaceRange(completion, start, end);
-            } else {
-                this.editor.document.replaceRange(completion, start);
-            }
-        }
-
-        if (insertedName) {
-            this.editor.setCursorPos(start.line, start.ch + completion.length - 1);
-
-            // Since we're now inside the double-quotes we just inserted,
-            // immediately pop up the attribute value hint.
-            return true;
-        } else if (tokenType === HTMLUtils.ATTR_VALUE && this.tagInfo.attr.hasEndQuote) {
-            // Move the cursor to the right of the existing end quote after value insertion.
-            this.editor.setCursorPos(start.line, start.ch + completion.length + 1);
-        }
-        */
-        return false; // added
+        
+        return true;
     };
-
+    
+    
     AppInit.appReady(function () {
         // Parse JSON files
         ArcGIS_JS = JSON.parse(ArcGIS_JS_JSON);
         // Register code hint providers
         var bracketsHints = new ArcGISHints();
+        // register hints with manager
         CodeHintManager.registerHintProvider(bracketsHints, ["javascript", "html"], 0);
         // For unit testing
         exports.ArcGISHintProvider = bracketsHints;
     });
+    
+    
 });
