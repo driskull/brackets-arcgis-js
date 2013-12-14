@@ -9,14 +9,14 @@ define(function (require, exports, module) {
         CodeHintManager     = brackets.getModule("editor/CodeHintManager"),
         ArcGIS_JS_JSON      = require("text!jsapi.json"),
         ArcGIS_JS;
-
+    
     /**
      * @constructor
      */
     function ArcGISHints() {
-        this.globalAttributes = this.readGlobalArcGISHints();
-        this.cachedHints = null;
-        this.exclusion = "";
+        //this.globalAttributes = this.readGlobalArcGISHints();
+        //this.cachedHints = null;
+        //this.exclusion = "";
     }
 
     /**
@@ -50,10 +50,6 @@ define(function (require, exports, module) {
      * whether it is appropriate to do so.
      */
     ArcGISHints.prototype.hasHints = function (editor, implicitChar) {
-        
-        console.log(editor);
-        console.log(implicitChar);
-        
         
         /*
         var pos = editor.getCursorPos(),
@@ -324,18 +320,16 @@ define(function (require, exports, module) {
             this.editor.setCursorPos(start.line, start.ch + completion.length + 1);
         }
         */
-        return true; // added
+        return false; // added
     };
 
     AppInit.appReady(function () {
         // Parse JSON files
         ArcGIS_JS = JSON.parse(ArcGIS_JS_JSON);
-        
         // Register code hint providers
-        var ArcGISHints = new ArcGISHints();
-        CodeHintManager.registerHintProvider(ArcGISHints, ["js"], 6);
-    
+        var bracketsHints = new ArcGISHints();
+        CodeHintManager.registerHintProvider(bracketsHints, ["javascript", "html"], 0);
         // For unit testing
-        exports.ArcGISHintProvider = ArcGISHints;
+        exports.ArcGISHintProvider = bracketsHints;
     });
 });
