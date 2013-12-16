@@ -94,7 +94,7 @@ define(function (require, exports, module) {
      */
     ArcGISHints.prototype.insertHint = function (completion) {
         
-        return true;
+        return false;
     };
     
     
