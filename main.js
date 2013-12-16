@@ -7,31 +7,11 @@ define(function (require, exports, module) {
     // Load dependent modules
     var AppInit = brackets.getModule("utils/AppInit"),
         CodeHintManager = brackets.getModule("editor/CodeHintManager"),
-        ArcGIS_JS_JSON = require("text!jsapi.json"),
-        ArcGIS_JS;
+        ArcGIS_JS = require("jsapi");
     
 
-    function ArcGISHints() {
-        this.globalAttributes = this.readGlobalArcGISHints();
-        //this.cachedHints = null;
-        //this.exclusion = "";
-    }
+    function ArcGISHints() {}
 
-    
-    
-    /**
-     * @private
-     * Parse the code hints from JSON data and extract all hints from property names.
-     * @return {!Array.<string>} An array of code hints read from the JSON data source.
-     */
-    ArcGISHints.prototype.readGlobalArcGISHints = function () {
-        return $.map(ArcGIS_JS, function (value, key) {
-            if (value.global === "true") {
-                return key;
-            }
-        });
-    };
-    
     
     
     /**
@@ -56,11 +36,9 @@ define(function (require, exports, module) {
         var mode = editor.getModeForSelection(),
             cursor = editor.getCursorPos();
         
-        console.log(editor);
+
         
-        console.log(implicitChar);
         
-        console.log(cursor);
         
         return true;
         
@@ -90,6 +68,7 @@ define(function (require, exports, module) {
      */
     ArcGISHints.prototype.getHints = function (implicitChar) {
         
+        /*
         return {
             hints: ["test1","test2"],
             match: "tst",
@@ -97,7 +76,7 @@ define(function (require, exports, module) {
             handleWideResults: false
         };
         
-        
+        */
         
         return null;
         
@@ -120,8 +99,6 @@ define(function (require, exports, module) {
     
     
     AppInit.appReady(function () {
-        // Parse JSON files
-        ArcGIS_JS = JSON.parse(ArcGIS_JS_JSON);
         // Register code hint providers
         var bracketsHints = new ArcGISHints();
         // register hints with manager
