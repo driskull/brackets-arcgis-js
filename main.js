@@ -36,11 +36,11 @@ define(function (require, exports, module) {
         var mode = editor.getModeForSelection(),
             cursor = editor.getCursorPos();
         
-
+        // Need to return true if there are hints available for what is currently being typed, otherwise false.
         
         
         
-        return true;
+        return false;
         
         
         
@@ -76,6 +76,10 @@ define(function (require, exports, module) {
             handleWideResults: false
         };
         
+        
+        // need to return the hints for the current character if any. Otherwise return null.
+        
+        
         */
         
         return null;
@@ -93,6 +97,11 @@ define(function (require, exports, module) {
      * additional explicit hint request.
      */
     ArcGISHints.prototype.insertHint = function (completion) {
+        
+        
+        // Indicates whether the manager should follow hint insertion with an additional explicit hint request.
+        
+        
         
         return false;
     };
